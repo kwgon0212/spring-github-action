@@ -36,13 +36,13 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Docker 이미지 생성
-        run: docker build -t spring-server .
+        run: docker build -t my-server .
 
       - name: Docker 이미지에 Tag 붙이기
-        run: docker tag spring-server ${{ steps.login-ecr.outputs.registry }}/spring-server:latest
+        run: docker tag my-server ${{ steps.login-ecr.outputs.registry }}/my-server:latest
 
       - name: ECR에 Docker 이미지 Push하기
-        run: docker push ${{ steps.login-ecr.outputs.registry }}/spring-server:latest
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/my-server:latest
 
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
@@ -52,7 +52,7 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }} # EC2의 엑세스키의 내부 텍스트(pem파일)
           script_stop: true # 아래 script 중 실패하는 명령이 하나라도 있으면 실패로 처리
           script: |
-            docker stop spring-server || true
-            docker rm spring-server || true
-            docker pull ${{ steps.login-ecr.outputs.registry }}/spring-server:latest
-            docker run -d --name spring-server -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/spring-server:latest
+            docker stop my-server || true
+            docker rm my-server || true
+            docker pull ${{ steps.login-ecr.outputs.registry }}/my-server:latest
+            docker run -d --name my-server -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/my-server:latest
